@@ -127,6 +127,32 @@ To deploy updates to your application:
 vercel --prod
 ```
 
+### Troubleshooting Vercel Deployment
+
+If you encounter deployment issues, try these solutions:
+
+1. **Python Version Errors**: The app is configured to use Python 3.9. If you see errors related to Python version:
+   - Check that the runtime is specified correctly in `vercel.json` and `vercel/runtime.txt`
+   - You may need to manually select Python 3.9 in the Vercel project settings
+
+2. **Dependency Errors**:
+   - If you see errors about missing modules (like `distutils`), try deploying with the fallback requirements:
+     ```
+     mv vercel/fallback-requirements.txt vercel/requirements.txt
+     vercel --prod
+     ```
+   - Once the basic deployment works, you can gradually add back dependencies
+
+3. **Size Limitations**:
+   - Vercel has function size limits. If your deployment is too large, consider:
+     - Removing unnecessary dependencies
+     - Using smaller versions of libraries (like `numpy-slim`)
+     - Breaking your app into multiple serverless functions
+
+4. **Environment Variables**:
+   - Ensure all required environment variables are set in the Vercel dashboard
+   - For local testing, use a `.env` file (but don't commit it to your repository)
+
 ## Contact
 
 For any questions or assistance with this application, please contact [your contact information]. 
