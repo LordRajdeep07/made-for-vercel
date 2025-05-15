@@ -1,0 +1,32 @@
+{
+  "name": "disease-outbreak-prediction",
+  "version": "1.0.0",
+  "description": "Disease Outbreak Prediction System",
+  "private": true,
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "scripts": {
+    "start": "python vercel/app.py"
+  },
+  "dependencies": {},
+  "devDependencies": {},
+  "vercel": {
+    "builds": [
+      {
+        "src": "vercel/app.py",
+        "use": "@vercel/python",
+        "config": {
+          "runtime": "python3.9",
+          "maxLambdaSize": "15mb"
+        }
+      }
+    ],
+    "routes": [
+      {
+        "src": "/(.*)",
+        "dest": "vercel/app.py"
+      }
+    ]
+  }
+} 

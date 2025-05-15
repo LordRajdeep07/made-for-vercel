@@ -1,0 +1,10 @@
+[build]
+  command = "pip install -r vercel/requirements.txt"
+
+[functions.vercel/app]
+  runtime = "python3.9"
+  memory = 1024
+  maxDuration = 10
+
+[python]
+  version = "3.9" 
