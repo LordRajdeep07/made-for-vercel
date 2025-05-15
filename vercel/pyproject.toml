@@ -1,0 +1,5 @@
+﻿[project]
+name = "vercel-flask-app"
+version = "0.1.0"
+description = "Simple Flask app for Vercel"
+requires-python = ">=3.9"

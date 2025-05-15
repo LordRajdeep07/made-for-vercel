@@ -1,68 +1,68 @@
 import os
 import sys
-from flask import Flask, render_template_string
+import traceback
 
-# Create a basic Flask app
-app = Flask(__name__)
+try:
+    from flask import Flask, jsonify
 
-@app.route('/')
-def home():
-    return render_template_string("""
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <title>Disease Outbreak Prediction</title>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <style>
-            body {
-                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-                line-height: 1.6;
-                color: #333;
-                max-width: 800px;
-                margin: 0 auto;
-                padding: 20px;
-            }
-            h1 {
-                color: #2563eb;
-                border-bottom: 2px solid #e5e7eb;
-                padding-bottom: 10px;
-            }
-            .card {
-                background: #f9fafb;
-                border-radius: 8px;
-                padding: 20px;
-                margin: 20px 0;
-                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            }
-            .success {
-                color: #10b981;
-                font-weight: bold;
-            }
-        </style>
-    </head>
-    <body>
-        <h1>Disease Outbreak Prediction System</h1>
-        
-        <div class="card">
-            <h2>Deployment Successful!</h2>
-            <p class="success">Your application has been successfully deployed to Vercel.</p>
-            <p>This is a minimal version of the application to demonstrate successful deployment.</p>
-        </div>
-        
-        <div class="card">
-            <h2>Next Steps</h2>
-            <p>To deploy the full application:</p>
-            <ol>
-                <li>Gradually add dependencies to the requirements.txt file</li>
-                <li>Update this placeholder with your actual application code</li>
-                <li>Configure environment variables in the Vercel dashboard</li>
-            </ol>
-        </div>
-    </body>
-    </html>
-    """)
+    # Create a minimal Flask app
+    app = Flask(__name__)
+
+    @app.route('/', methods=['GET'])
+    def index():
+        return jsonify({
+            "status": "ok",
+            "message": "Vercel Flask deployment is working"
+        })
+
+    @app.route('/debug', methods=['GET'])
+    def debug():
+        """Return environment and system information for debugging"""
+        info = {
+            "python_version": sys.version,
+            "sys_path": sys.path,
+            "environment": dict(os.environ),
+            "cwd": os.getcwd()
+        }
+        return jsonify(info)
+
+    # Error handlers
+    @app.errorhandler(404)
+    def not_found(e):
+        return jsonify({"error": "Not found"}), 404
+
+    @app.errorhandler(500)
+    def server_error(e):
+        return jsonify({"error": str(e)}), 500
+
+except Exception as e:
+    # If Flask itself can't be imported or initialized
+    print(f"Initialization error: {str(e)}")
+    print(traceback.format_exc())
+    
+    # Create a minimal WSGI app as fallback
+    def application(environ, start_response):
+        status = '200 OK'
+        headers = [('Content-type', 'text/html; charset=utf-8')]
+        start_response(status, headers)
+        error_message = f"""
+        <html>
+            <head><title>Flask Initialization Error</title></head>
+            <body>
+                <h1>Flask Initialization Error</h1>
+                <p>Error: {str(e)}</p>
+                <pre>{traceback.format_exc()}</pre>
+            </body>
+        </html>
+        """
+        return [error_message.encode('utf-8')]
+    
+    # Also define app variable so the WSGI server can find it
+    app = application
 
 # For local testing
 if __name__ == "__main__":
-    app.run(debug=True) 
+    if isinstance(app, Flask):
+        app.run(debug=True, port=3000)
+    else:
+        print("Flask app failed to initialize. Check errors above.") 
